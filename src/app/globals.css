@@ -1,0 +1,283 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ── Paleta pastel cálida María Caro Store ── */
+    --background:    40 30% 98%;          /* crema muy suave */
+    --foreground:    340 25% 20%;         /* marrón-rosado oscuro */
+
+    --card:          0 0% 100%;
+    --card-foreground: 340 25% 20%;
+
+    --popover:       0 0% 100%;
+    --popover-foreground: 340 25% 20%;
+
+    /* Primary: rosa pastel suave */
+    --primary:         345 65% 55%;       /* rosa medio - no tan oscuro */
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: rosa muy claro */
+    --secondary:       340 60% 96%;
+    --secondary-foreground: 345 65% 45%;
+
+    /* Muted: lavanda pastel */
+    --muted:           270 40% 97%;
+    --muted-foreground: 270 15% 55%;
+
+    /* Accent: amarillo bebé / dorado suave */
+    --accent:          48 90% 93%;
+    --accent-foreground: 42 60% 30%;
+
+    --destructive:     0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border:          340 25% 90%;
+    --input:           340 25% 92%;
+    --ring:            345 65% 55%;
+
+    --radius: 0.75rem;
+
+    /* ── Custom pastel vars ── */
+    --baby-pink:      rgba(251, 207, 232, 0.6);
+    --baby-blue:      rgba(186, 230, 253, 0.55);
+    --baby-yellow:    rgba(254, 240, 138, 0.55);
+    --baby-lilac:     rgba(221, 214, 254, 0.55);
+    --warm-cream:     rgba(254, 243, 232, 0.9);
+
+    --rose-border:    rgba(244, 114, 182, 0.30);
+    --blue-border:    rgba(125, 211, 252, 0.40);
+    --gold-border:    rgba(250, 204, 21, 0.40);
+    --lilac-border:   rgba(196, 181, 253, 0.45);
+    --gold-border-strong: rgba(202, 138, 4, 0.40);
+
+    /* Pastels para secciones */
+    --section-rose:   #FFF0F5;
+    --section-blue:   #EFF8FF;
+    --section-yellow: #FFFBEB;
+    --section-lilac:  #F5F3FF;
+    --section-green:  #F0FDF4;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    @apply antialiased text-foreground;
+    background-color: #FFFAF8;  /* crema cálido base */
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* Scrollbar pastel suave */
+  ::-webkit-scrollbar       { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(244, 114, 182, 0.20);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(236, 72, 153, 0.35);
+  }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  /* ── Glassmorphism ── */
+  .glass {
+    background: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .glass-warm {
+    background: rgba(255, 245, 250, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .glass-cream {
+    background: rgba(254, 250, 248, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .glass-dark {
+    background: rgba(100, 30, 60, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  /* ── Pastel section backgrounds ── */
+  .bg-section-rose   { background-color: var(--section-rose); }
+  .bg-section-blue   { background-color: var(--section-blue); }
+  .bg-section-yellow { background-color: var(--section-yellow); }
+  .bg-section-lilac  { background-color: var(--section-lilac); }
+  .bg-section-green  { background-color: var(--section-green); }
+
+  /* ── Pastel gradient backgrounds ── */
+  .bg-pastel-hero {
+    background: linear-gradient(
+      135deg,
+      #FFF0F5 0%,       /* rosa bebé */
+      #FFF8F0 25%,      /* crema durazno */
+      #F0F4FF 60%,      /* azul lavanda */
+      #FFF5FB 100%      /* rosado muy suave */
+    );
+  }
+
+  .bg-pastel-warm {
+    background: linear-gradient(135deg, #FFF5F8 0%, #FFFBF0 50%, #F8F4FF 100%);
+  }
+
+  .bg-pastel-blue {
+    background: linear-gradient(135deg, #EFF8FF 0%, #F0F4FF 100%);
+  }
+
+  /* ── Borders ── */
+  .rose-border   { border: 1px solid var(--rose-border); }
+  .blue-border   { border: 1px solid var(--blue-border); }
+  .gold-border   { border: 1px solid var(--gold-border); }
+  .lilac-border  { border: 1px solid var(--lilac-border); }
+  .gold-border-strong { border: 1px solid var(--gold-border-strong); }
+
+  /* Backwards compat */
+  .pink-border   { border: 1px solid var(--rose-border); }
+
+  /* ── Gradient text ── */
+  .text-rose-gradient {
+    background: linear-gradient(135deg, #E879A0 0%, #F472B6 40%, #C084FC 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-pink-gradient { @apply text-rose-gradient; }
+
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #D97706 0%, #F59E0B 50%, #FBBF24 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-heaven-gradient {
+    background: linear-gradient(135deg, #E879A0 0%, #A78BFA 50%, #60A5FA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Shimmer ── */
+  .bg-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(244, 114, 182, 0.08) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* ── Dividers ── */
+  .gold-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.45), transparent);
+  }
+  .pink-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(244, 114, 182, 0.35), transparent);
+  }
+  .rose-divider { @apply pink-divider; }
+  .lilac-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(196, 181, 253, 0.40), transparent);
+  }
+  .aqua-divider { @apply lilac-divider; }
+
+  /* ── Audio wave bars ── */
+  .wave-bar { transform-origin: bottom center; }
+
+  /* ── Scrollbar hide ── */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  /* ── Product card hover ── */
+  .product-card-hover {
+    transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+  }
+  .product-card-hover:hover {
+    box-shadow: 0 10px 40px rgba(244, 114, 182, 0.15), 0 2px 8px rgba(0,0,0,0.04);
+    border-color: rgba(249, 168, 212, 0.50);
+    transform: translateY(-1px);
+  }
+
+  /* ── Feature badge ── */
+  .badge-spiritual {
+    @apply inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider rounded-full px-2.5 py-1;
+  }
+
+  /* ── Trust block ── */
+  .trust-block {
+    @apply flex items-center gap-3 p-4 rounded-2xl border;
+  }
+
+  /* ── Verse card ── */
+  .verse-card {
+    background: linear-gradient(135deg, #FFF0F5 0%, #F5F3FF 50%, #EFF8FF 100%);
+    @apply rounded-3xl border border-pink-100 shadow-sm;
+  }
+
+  /* ── Float animation ── */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* ── Fade up ── */
+  .animate-fade-up {
+    animation: fade-up 0.6s ease-out both;
+  }
+
+  /* ── Pulse glow ── */
+  .animate-pulse-glow {
+    animation: pulse-glow 2.5s ease-in-out infinite;
+  }
+}
+
+/* ── Keyframes ── */
+@keyframes wave-bar {
+  0%, 100% { transform: scaleY(0.3); }
+  50%       { transform: scaleY(1);   }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.03); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
