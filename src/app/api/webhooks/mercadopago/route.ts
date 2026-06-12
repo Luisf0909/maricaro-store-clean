@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import crypto from 'crypto'
 
 export async function POST(req: Request) {
   try {
@@ -89,6 +90,39 @@ export async function POST(req: Request) {
             comment: `Pago ${orderStatus === 'paid' ? 'confirmado' : 'rechazado'} por Mercado Pago`,
             customer_notified: false,
           })
+      }
+
+      // Generate download tokens for digital products if payment is approved
+      if (orderStatus === 'paid') {
+        const { data: orderItems } = await admin
+          .from('order_items')
+          .select('product_id, products(is_digital)')
+          .eq('order_id', payment.external_reference)
+
+        if (orderItems && orderItems.length > 0) {
+          const digitalItems = orderItems.filter((item: any) => item.products?.is_digital)
+
+          if (digitalItems.length > 0) {
+            const tokens = digitalItems.map((item: any) => ({
+              order_id: payment.external_reference,
+              product_id: item.product_id,
+              token: crypto.randomBytes(32).toString('hex'),
+              download_count: 0,
+              max_downloads: 5,
+              expires_at: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
+            }))
+
+            const { error: tokenError } = await admin
+              .from('order_download_tokens')
+              .insert(tokens)
+
+            if (tokenError) {
+              console.error('Error creating download tokens:', tokenError)
+            } else {
+              console.log(`Created ${tokens.length} download tokens for order ${payment.external_reference}`)
+            }
+          }
+        }
       }
     }
 
