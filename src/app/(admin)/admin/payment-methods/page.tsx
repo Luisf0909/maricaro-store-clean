@@ -31,7 +31,7 @@ export default function PaymentMethodsPage() {
     }
   }
 
-  async function handleSave(method: PaymentMethod) {
+  async function handleSave() {
     setShowForm(false)
     setEditingMethod(null)
     await fetchMethods()
