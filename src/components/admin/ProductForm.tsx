@@ -120,7 +120,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     else toast.error('Error al eliminar')
   }
 
-  const fi = 'w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-warm-400 bg-white'
+  const fi = 'w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-rose-400 bg-white'
   const lb = 'block text-xs font-medium text-gray-600 mb-1'
 
   return (
@@ -146,13 +146,13 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                     form.is_digital === digital
                       ? digital
                         ? 'border-blue-500 bg-blue-50 text-blue-800'
-                        : 'border-warm-500 bg-warm-50 text-warm-800'
+                        : 'border-rose-500 bg-rose-50 text-rose-800'
                       : 'border-gray-200 text-gray-500 hover:border-gray-300'
                   }`}
                 >
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
                     form.is_digital === digital
-                      ? digital ? 'bg-blue-500' : 'bg-warm-500'
+                      ? digital ? 'bg-blue-500' : 'bg-rose-500'
                       : 'bg-gray-300'
                   }`} />
                   {label}
@@ -214,7 +214,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                 </div>
               </div>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={form.made_to_order} onChange={(e) => update('made_to_order', e.target.checked)} className="accent-warm-600" />
+                <input type="checkbox" checked={form.made_to_order} onChange={(e) => update('made_to_order', e.target.checked)} className="accent-rose-600" />
                 <span className="text-sm text-gray-700">A pedido — mostrar &ldquo;48-72 hrs&rdquo; cuando stock = 0</span>
               </label>
             </div>
@@ -273,17 +273,6 @@ export function ProductForm({ product, categories }: ProductFormProps) {
               <label className={lb}>Meta descripción</label>
               <textarea rows={2} value={form.meta_description} onChange={(e) => update('meta_description', e.target.value)} className={fi} />
             </div>
-            <div>
-              <label className={lb}>Video URL (opcional)</label>
-              <input
-                type="url"
-                value={form.video_url}
-                onChange={(e) => update('video_url', e.target.value)}
-                placeholder="https://... (mp4, webm o link de Instagram)"
-                className={fi}
-              />
-              <p className="text-xs text-gray-400 mt-1">1 video opcional por producto. Formatos: mp4, webm. Se muestra en la página del producto.</p>
-            </div>
           </div>
         </div>
 
@@ -299,7 +288,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
               </select>
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={form.is_featured} onChange={(e) => update('is_featured', e.target.checked)} className="accent-warm-600" />
+              <input type="checkbox" checked={form.is_featured} onChange={(e) => update('is_featured', e.target.checked)} className="accent-rose-600" />
               <span className="text-sm text-gray-700">Destacado en la home</span>
             </label>
           </div>
@@ -307,12 +296,12 @@ export function ProductForm({ product, categories }: ProductFormProps) {
           <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-3">
             <h2 className="font-medium text-gray-900 text-sm">Visibilidad</h2>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={form.is_active} onChange={(e) => update('is_active', e.target.checked)} className="accent-warm-600" />
+              <input type="checkbox" checked={form.is_active} onChange={(e) => update('is_active', e.target.checked)} className="accent-rose-600" />
               <span className="text-sm text-gray-700">Activo (visible en tienda)</span>
             </label>
           </div>
 
-          <button type="submit" disabled={saving} className="w-full bg-warm-700 hover:bg-warm-800 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors">
+          <button type="submit" disabled={saving} className="w-full bg-rose-600 hover:bg-rose-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors">
             {saving ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear producto'}
           </button>
 
