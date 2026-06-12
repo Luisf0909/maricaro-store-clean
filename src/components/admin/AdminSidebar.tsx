@@ -70,17 +70,17 @@ export function AdminSidebar() {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Blobs decorativos */}
-      <div className="absolute -bottom-20 -left-20 w-56 h-56 rounded-full bg-warm-800/50 pointer-events-none" />
-      <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-warm-800/30 pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-56 h-56 rounded-full bg-violet-300/40 pointer-events-none" />
+      <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-cyan-300/30 pointer-events-none" />
 
       {/* Logo */}
-      <div className="relative px-4 py-4 border-b border-warm-700/60 flex items-center justify-between">
+      <div className="relative px-4 py-4 border-b border-violet-200/60 flex items-center justify-between">
         <Link href="/" className="block group">
           <span className="font-cormorant text-xl">
-            <span className="text-cream-100 font-medium">MariaCaro</span>
-            <span className="text-gold-400 font-light">Store</span>
+            <span className="text-violet-800 font-medium">MariaCaro</span>
+            <span className="text-cyan-500 font-light">Store</span>
           </span>
-          <p className="text-[9px] uppercase tracking-[0.3em] text-cream-500/60 mt-0.5">
+          <p className="text-[9px] uppercase tracking-[0.3em] text-violet-600/60 mt-0.5">
             Administración
           </p>
         </Link>
@@ -88,14 +88,14 @@ export function AdminSidebar() {
           <Link
             href="/"
             target="_blank"
-            className="p-1 text-cream-500/40 hover:text-cream-300 transition-colors"
+            className="p-1 text-violet-600/40 hover:text-violet-700 transition-colors"
             title="Ver tienda"
           >
             <ExternalLink className="h-3 w-3" />
           </Link>
           {/* Close button — mobile only */}
           <button
-            className="lg:hidden p-1 text-cream-500/60 hover:text-cream-200 transition-colors"
+            className="lg:hidden p-1 text-violet-600/60 hover:text-violet-800 transition-colors"
             onClick={() => setMobileOpen(false)}
           >
             <X className="h-4 w-4" />
@@ -107,7 +107,7 @@ export function AdminSidebar() {
       <nav className="relative flex-1 px-3 py-3 space-y-4 overflow-y-auto">
         {NAV_GROUPS.map(group => (
           <div key={group.label}>
-            <p className="px-3 mb-1 text-[9px] uppercase tracking-[0.25em] text-cream-500/40 font-semibold">
+            <p className="px-3 mb-1 text-[9px] uppercase tracking-[0.25em] text-violet-600/40 font-semibold">
               {group.label}
             </p>
             <div className="space-y-0.5">
@@ -120,14 +120,14 @@ export function AdminSidebar() {
                     className={cn(
                       'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200',
                       active
-                        ? 'bg-warm-700/60 text-cream-100 shadow-sm'
-                        : 'text-cream-400 hover:bg-warm-700/40 hover:text-cream-200'
+                        ? 'bg-violet-200/60 text-violet-900 shadow-sm'
+                        : 'text-violet-700 hover:bg-violet-200/40 hover:text-violet-900'
                     )}
                   >
-                    <Icon className={cn('h-3.5 w-3.5 flex-shrink-0', active ? 'text-gold-400' : 'text-cream-500')} />
+                    <Icon className={cn('h-3.5 w-3.5 flex-shrink-0', active ? 'text-cyan-600' : 'text-violet-600')} />
                     <span className="text-sm">{label}</span>
                     {active && (
-                      <span className="ml-auto h-1.5 w-1.5 rounded-full bg-gold-400 flex-shrink-0" />
+                      <span className="ml-auto h-1.5 w-1.5 rounded-full bg-cyan-500 flex-shrink-0" />
                     )}
                   </Link>
                 )
@@ -138,10 +138,10 @@ export function AdminSidebar() {
       </nav>
 
       {/* Verse */}
-      <div className="relative px-4 py-3 border-t border-warm-700/50">
-        <p className="text-[9px] italic text-cream-400/40 font-serif text-center leading-relaxed">
+      <div className="relative px-4 py-3 border-t border-violet-200/50">
+        <p className="text-[9px] italic text-violet-600/40 font-serif text-center leading-relaxed">
           &ldquo;Todo lo que hagan, háganlo de corazón.&rdquo;
-          <span className="block not-italic tracking-widest uppercase text-cream-500/30 mt-0.5">Col. 3:23</span>
+          <span className="block not-italic tracking-widest uppercase text-violet-500/30 mt-0.5">Col. 3:23</span>
         </p>
       </div>
 
@@ -149,9 +149,9 @@ export function AdminSidebar() {
       <div className="relative px-3 pb-4">
         <Link
           href="/api/auth/signout"
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-cream-400 hover:bg-warm-700/40 hover:text-cream-200 transition-all duration-200"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-violet-700 hover:bg-violet-200/40 hover:text-violet-900 transition-all duration-200"
         >
-          <LogOut className="h-3.5 w-3.5 text-cream-500" />
+          <LogOut className="h-3.5 w-3.5 text-violet-600" />
           Cerrar sesión
         </Link>
       </div>
@@ -161,23 +161,23 @@ export function AdminSidebar() {
   return (
     <>
       {/* ── Desktop sidebar (always visible ≥ lg) ── */}
-      <aside className="hidden lg:flex w-56 bg-warm-900 text-cream-200 flex-col flex-shrink-0 relative overflow-hidden min-h-screen">
+      <aside className="hidden lg:flex w-56 bg-gradient-to-b from-violet-100 to-cyan-50 text-violet-900 flex-col flex-shrink-0 relative overflow-hidden min-h-screen">
         <SidebarContent />
       </aside>
 
       {/* ── Mobile top bar (< lg) ── */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-warm-900 text-cream-200 flex items-center justify-between px-4 h-14 border-b border-warm-700/60">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-violet-100 to-cyan-50 text-violet-900 flex items-center justify-between px-4 h-14 border-b border-violet-200/60">
         <Link href="/" className="font-cormorant text-xl">
-          <span className="text-cream-100 font-medium">MariaCaro</span>
-          <span className="text-gold-400 font-light">Store</span>
+          <span className="text-violet-800 font-medium">MariaCaro</span>
+          <span className="text-cyan-500 font-light">Store</span>
         </Link>
         <div className="flex items-center gap-2">
-          <Link href="/" target="_blank" className="p-1.5 text-cream-500/50 hover:text-cream-300 transition-colors">
+          <Link href="/" target="_blank" className="p-1.5 text-violet-600/50 hover:text-violet-700 transition-colors">
             <ExternalLink className="h-4 w-4" />
           </Link>
           <button
             onClick={() => setMobileOpen(v => !v)}
-            className="p-1.5 text-cream-300 hover:text-white transition-colors"
+            className="p-1.5 text-violet-700 hover:text-violet-900 transition-colors"
             aria-label="Menú administración"
           >
             <Menu className="h-5 w-5" />
@@ -196,7 +196,7 @@ export function AdminSidebar() {
       {/* ── Mobile drawer panel ── */}
       <aside
         className={cn(
-          'lg:hidden fixed top-0 left-0 z-50 h-full w-64 bg-warm-900 text-cream-200 flex flex-col relative overflow-hidden transition-transform duration-300',
+          'lg:hidden fixed top-0 left-0 z-50 h-full w-64 bg-gradient-to-b from-violet-100 to-cyan-50 text-violet-900 flex flex-col relative overflow-hidden transition-transform duration-300',
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
