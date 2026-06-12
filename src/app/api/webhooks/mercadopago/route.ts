@@ -1,82 +1,99 @@
 import { NextResponse } from 'next/server'
-import { MercadoPagoConfig, Payment } from 'mercadopago'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createHmac, timingSafeEqual } from 'crypto'
+import { MercadopagoClient } from 'mercadopago'
 
-const mp = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
-})
-
-function verifyMPSignature(request: Request, dataId: string): boolean {
-  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET
-  if (!secret) return false
-
-  const xSignature = request.headers.get('x-signature') ?? ''
-  const xRequestId = request.headers.get('x-request-id') ?? ''
-
-  const parts: Record<string, string> = {}
-  xSignature.split(',').forEach((part) => {
-    const [k, v] = part.split('=')
-    if (k && v) parts[k.trim()] = v.trim()
-  })
-
-  const ts = parts['ts']
-  const v1 = parts['v1']
-  if (!ts || !v1) return false
-
-  // MP signature format: HMAC-SHA256("id:<id>;request-id:<req-id>;ts:<ts>;")
-  const toSign = `id:${dataId};request-id:${xRequestId};ts:${ts};`
-  const expected = createHmac('sha256', secret).update(toSign).digest('hex')
-
+export async function POST(req: Request) {
   try {
-    return timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(v1, 'hex'))
-  } catch {
-    return false
+    const body = await req.json()
+
+    // Mercado Pago envía notificaciones con topic y resource
+    if (body.topic === 'payment' || body.type === 'payment') {
+      const paymentId = body.data?.id || body.resource?.id?.split('/').pop()
+
+      if (!paymentId) {
+        return NextResponse.json({ received: true })
+      }
+
+      // Obtener método de pago para verificar
+      const admin = createAdminClient()
+      const { data: paymentMethod } = await admin
+        .from('payment_methods')
+        .select('*')
+        .eq('provider', 'mercadopago')
+        .eq('is_active', true)
+        .single()
+
+      if (!paymentMethod?.config?.access_token) {
+        console.error('Mercado Pago no configurado para webhook')
+        return NextResponse.json({ received: true })
+      }
+
+      // Consultar detalles del pago con el SDK
+      const client = new MercadopagoClient({
+        accessToken: paymentMethod.config.access_token as string,
+      })
+
+      const payment = await client.paymentClient.get({
+        id: paymentId,
+      })
+
+      if (!payment || !payment.external_reference) {
+        console.warn('Pago sin referencia externa:', paymentId)
+        return NextResponse.json({ received: true })
+      }
+
+      // Mapear estado de Mercado Pago a nuestros estados
+      const statusMap: Record<string, string> = {
+        'approved': 'paid',
+        'pending': 'pending',
+        'rejected': 'failed',
+        'cancelled': 'failed',
+        'refunded': 'refunded',
+        'charged_back': 'failed',
+      }
+
+      const orderStatus = statusMap[payment.status] || 'failed'
+
+      // Actualizar orden en la BD
+      const { error: updateError } = await admin
+        .from('orders')
+        .update({
+          payment_status: orderStatus,
+          payment_method: 'mercadopago',
+          payment_id: paymentId.toString(),
+          paid_at: orderStatus === 'paid' ? new Date().toISOString() : null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', payment.external_reference)
+
+      if (updateError) {
+        console.error('Error actualizando orden:', updateError)
+      } else {
+        console.log(`Pago ${paymentId} procesado. Orden: ${payment.external_reference}, Estado: ${orderStatus}`)
+      }
+
+      // Actualizar status history
+      if (orderStatus !== 'pending') {
+        await admin
+          .from('order_status_history')
+          .insert({
+            order_id: payment.external_reference,
+            previous_payment_status: 'pending',
+            new_payment_status: orderStatus,
+            comment: `Pago ${orderStatus === 'paid' ? 'confirmado' : 'rechazado'} por Mercado Pago`,
+            customer_notified: false,
+          })
+      }
+    }
+
+    return NextResponse.json({ received: true })
+  } catch (err: unknown) {
+    console.error('Error en webhook Mercado Pago:', err)
+    return NextResponse.json({ received: true })
   }
 }
 
-export async function POST(req: Request) {
-  const body = await req.json()
-
-  if (body.type !== 'payment' || !body.data?.id) {
-    return NextResponse.json({ received: true })
-  }
-
-  if (!verifyMPSignature(req, String(body.data.id))) {
-    return NextResponse.json({ error: 'Firma inválida' }, { status: 401 })
-  }
-
-  const paymentClient = new Payment(mp)
-  const payment = await paymentClient.get({ id: body.data.id })
-
-  const orderId = payment.external_reference
-  if (!orderId) return NextResponse.json({ received: true })
-
-  const admin = createAdminClient()
-  const { data: order } = await admin
-    .from('orders')
-    .select('id, payment_status')
-    .eq('id', orderId)
-    .single()
-
-  if (!order || order.payment_status === 'paid') {
-    return NextResponse.json({ received: true })
-  }
-
-  const updates: Record<string, unknown> = {
-    payment_id: String(payment.id),
-    payment_data: payment,
-  }
-
-  if (payment.status === 'approved') {
-    updates.payment_status = 'paid'
-    updates.status = 'confirmed'
-    updates.paid_at = new Date().toISOString()
-  } else if (payment.status === 'rejected' || payment.status === 'cancelled') {
-    updates.payment_status = 'failed'
-  }
-
-  await admin.from('orders').update(updates).eq('id', orderId)
-
-  return NextResponse.json({ received: true })
+export async function GET() {
+  // Mercado Pago verifica que el endpoint existe con GET
+  return NextResponse.json({ status: 'ok' })
 }
