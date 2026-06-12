@@ -1,6 +1,18 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
+interface Product {
+  digital_file_path: string
+  digital_file_name: string
+}
+
+interface TokenRecord {
+  id: string
+  download_count: number
+  max_downloads: number
+  products: Product
+}
+
 export async function GET(req: Request, { params }: { params: { token: string } }) {
   try {
     const admin = createAdminClient()
@@ -28,7 +40,7 @@ export async function GET(req: Request, { params }: { params: { token: string } 
       )
     }
 
-    const product = tokenRecord.products as any
+    const product = tokenRecord.products as unknown as Product
     if (!product?.digital_file_path) {
       return NextResponse.json(
         { error: 'Archivo no disponible' },

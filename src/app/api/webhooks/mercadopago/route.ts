@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import crypto from 'crypto'
 
+interface OrderItem {
+  product_id: string
+  products: { is_digital: boolean } | null
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json()
@@ -100,10 +105,10 @@ export async function POST(req: Request) {
           .eq('order_id', payment.external_reference)
 
         if (orderItems && orderItems.length > 0) {
-          const digitalItems = orderItems.filter((item: any) => item.products?.is_digital)
+          const digitalItems = (orderItems as OrderItem[]).filter((item) => item.products?.is_digital)
 
           if (digitalItems.length > 0) {
-            const tokens = digitalItems.map((item: any) => ({
+            const tokens = digitalItems.map((item: OrderItem) => ({
               order_id: payment.external_reference,
               product_id: item.product_id,
               token: crypto.randomBytes(32).toString('hex'),
