@@ -11,7 +11,6 @@ import { ProductImageGallery } from '@/components/store/ProductImageGallery'
 import { ProductReviews } from '@/components/store/ProductReviews'
 import { WishlistButton } from '@/components/store/WishlistButton'
 import { ProductCard } from '@/components/store/ProductCard'
-import { ProductVideo } from '@/components/store/ProductVideo'
 import Link from 'next/link'
 import {
   Shield, Truck, Download, RotateCcw, Share2,
@@ -218,23 +217,6 @@ export default async function ProductoPage({ params }: Props) {
             </div>
           </div>
         </div>
-
-        {/* ── VIDEO (si existe) ── */}
-        {product.video_url && (
-          <section className="mb-16">
-            <div className="flex items-center gap-2 mb-5">
-              <div className="h-px w-8 bg-rose-200" />
-              <p className="text-xs text-rose-500 font-semibold uppercase tracking-wider">Ver en acción</p>
-            </div>
-            <div className="max-w-2xl">
-              <ProductVideo
-                videoUrl={product.video_url}
-                posterUrl={images[0]?.url}
-                productName={product.name}
-              />
-            </div>
-          </section>
-        )}
 
         {/* ── SECCIONES ENRIQUECIDAS ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
