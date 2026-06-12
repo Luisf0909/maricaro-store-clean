@@ -16,13 +16,13 @@ interface Props {
   onPaymentInitiated?: () => void
 }
 
-interface MercadoPagoInstance {
-  checkout: (options: Record<string, unknown>) => void
-}
-
 declare global {
   interface Window {
-    MercadoPago?: (publicKey: string, options: Record<string, unknown>) => MercadoPagoInstance
+    MercadoPago?: {
+      new (publicKey: string, options: Record<string, unknown>): {
+        checkout: (options: Record<string, unknown>) => void
+      }
+    }
   }
 }
 
@@ -82,6 +82,10 @@ export function MercadoPagoCheckout({
         const pref = await res.json()
 
         // Inicializar Checkout Pro
+        if (!window.MercadoPago) {
+          throw new Error('MercadoPago no se cargó correctamente')
+        }
+
         const mp = new window.MercadoPago(pref.public_key, {
           locale: 'es-CL',
         })

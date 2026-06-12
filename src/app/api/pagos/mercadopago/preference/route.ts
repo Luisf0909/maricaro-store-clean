@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
-import { MercadopagoClient } from 'mercadopago'
 
 interface CartItem {
   product_id?: string
@@ -56,11 +55,6 @@ export async function POST(req: Request) {
       )
     }
 
-    // Inicializar cliente de Mercado Pago
-    const client = new MercadopagoClient({
-      accessToken: paymentMethod.config.access_token as string,
-    })
-
     // Construir preferencia de pago
     const preferenceData = {
       items: items.map((item: CartItem) => ({
@@ -97,10 +91,23 @@ export async function POST(req: Request) {
       notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/webhooks/mercadopago`,
     }
 
-    // Crear preferencia
-    const preference = await client.preferenceClient.create({
-      body: preferenceData as Record<string, unknown>,
+    // Crear preferencia via API REST
+    const accessToken = paymentMethod.config.access_token as string
+    const mpResponse = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(preferenceData),
     })
+
+    if (!mpResponse.ok) {
+      const error = await mpResponse.json()
+      throw new Error(`Mercado Pago API error: ${error.message || 'Unknown error'}`)
+    }
+
+    const preference = await mpResponse.json()
 
     return NextResponse.json({
       id: preference.id,

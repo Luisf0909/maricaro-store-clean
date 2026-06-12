@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { MercadopagoClient } from 'mercadopago'
 
 export async function POST(req: Request) {
   try {
@@ -28,14 +27,21 @@ export async function POST(req: Request) {
         return NextResponse.json({ received: true })
       }
 
-      // Consultar detalles del pago con el SDK
-      const client = new MercadopagoClient({
-        accessToken: paymentMethod.config.access_token as string,
+      // Consultar detalles del pago via API REST
+      const accessToken = paymentMethod.config.access_token as string
+      const mpResponse = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
       })
 
-      const payment = await client.paymentClient.get({
-        id: paymentId,
-      })
+      if (!mpResponse.ok) {
+        console.error(`Error consultando pago ${paymentId}:`, mpResponse.statusText)
+        return NextResponse.json({ received: true })
+      }
+
+      const payment = await mpResponse.json()
 
       if (!payment || !payment.external_reference) {
         console.warn('Pago sin referencia externa:', paymentId)
