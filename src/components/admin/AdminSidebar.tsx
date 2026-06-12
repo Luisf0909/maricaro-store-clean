@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import {
   LayoutDashboard, Package, ShoppingBag, Users, LogOut,
   Tag, Settings2, Gift, Star, BarChart3, Image as ImageIcon,
-  MessageSquare, ExternalLink, Menu, X
+  MessageSquare, ExternalLink, Menu, X, CreditCard
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -31,6 +31,12 @@ const NAV_GROUPS: NavGroup[] = [
       { href: '/admin/cupones',    label: 'Cupones',    icon: Tag },
       { href: '/admin/giftcards', label: 'GiftCards',  icon: Gift },
       { href: '/admin/puntos',    label: 'Puntos',     icon: Star },
+    ],
+  },
+  {
+    label: 'Pagos',
+    items: [
+      { href: '/admin/payment-methods', label: 'Métodos de pago', icon: CreditCard },
     ],
   },
   {

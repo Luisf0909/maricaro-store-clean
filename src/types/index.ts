@@ -386,3 +386,37 @@ export type OrderExtended = Order & {
   carrier: string | null
   accepts_marketing: boolean
 }
+
+// ── Payment Methods ────────────────────────────────────────────────────────
+export type PaymentMethod = {
+  id: string
+  name: string
+  provider: 'transbank' | 'mercadopago' | 'stripe' | 'paypal'
+  api_key: string | null
+  api_secret: string | null
+  config: Record<string, unknown> | null
+  is_production: boolean
+  is_active: boolean
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export type PaymentMethodConfig = {
+  transbank?: {
+    commerce_code?: string
+    api_key?: string
+  }
+  mercadopago?: {
+    access_token?: string
+    public_key?: string
+  }
+  stripe?: {
+    publishable_key?: string
+    secret_key?: string
+  }
+  paypal?: {
+    client_id?: string
+    client_secret?: string
+  }
+}
