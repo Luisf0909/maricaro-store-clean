@@ -3,6 +3,26 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { MercadopagoClient } from 'mercadopago'
 
+interface CartItem {
+  product_id?: string
+  id?: string
+  product_name?: string
+  name?: string
+  variant_name?: string
+  quantity: number
+  unit_price?: number
+  price?: number
+}
+
+interface PreferenceBody {
+  items: CartItem[]
+  orderId: string
+  userEmail: string
+  userName?: string
+  userPhone?: string
+  userRut?: string
+}
+
 export async function POST(req: Request) {
   try {
     // Verificar autenticación del usuario
@@ -10,7 +30,7 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
 
-    const body = await req.json()
+    const body = await req.json() as PreferenceBody
     const { items, orderId, userEmail, userName, userPhone, userRut } = body
 
     if (!items?.length || !orderId || !userEmail) {
@@ -43,7 +63,7 @@ export async function POST(req: Request) {
 
     // Construir preferencia de pago
     const preferenceData = {
-      items: items.map((item: any) => ({
+      items: items.map((item: CartItem) => ({
         id: item.product_id || item.id,
         title: item.product_name || item.name,
         description: item.variant_name ? `Variante: ${item.variant_name}` : undefined,
@@ -79,7 +99,7 @@ export async function POST(req: Request) {
 
     // Crear preferencia
     const preference = await client.preferenceClient.create({
-      body: preferenceData as any,
+      body: preferenceData as Record<string, unknown>,
     })
 
     return NextResponse.json({

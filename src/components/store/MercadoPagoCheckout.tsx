@@ -16,9 +16,13 @@ interface Props {
   onPaymentInitiated?: () => void
 }
 
+interface MercadoPagoInstance {
+  checkout: (options: Record<string, unknown>) => void
+}
+
 declare global {
   interface Window {
-    MercadoPago?: any
+    MercadoPago?: (publicKey: string, options: Record<string, unknown>) => MercadoPagoInstance
   }
 }
 
@@ -35,11 +39,11 @@ export function MercadoPagoCheckout({
   const containerRef = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [preference, setPreference] = useState<any>(null)
 
   useEffect(() => {
     loadMercadoPago()
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderId, userEmail])
 
   async function loadMercadoPago() {
     try {
@@ -76,7 +80,6 @@ export function MercadoPagoCheckout({
         }
 
         const pref = await res.json()
-        setPreference(pref)
 
         // Inicializar Checkout Pro
         const mp = new window.MercadoPago(pref.public_key, {
