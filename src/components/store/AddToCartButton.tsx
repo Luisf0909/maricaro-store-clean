@@ -34,11 +34,14 @@ export function AddToCartButton({ product, selectedVariantId }: AddToCartButtonP
     setTimeout(() => setAdded(false), 2000)
   }
 
-  const outOfStock = product.stock === 0 && !variant
-    ? true
-    : variant
-      ? variant.stock === 0
-      : product.stock === 0
+  // Los productos digitales siempre están disponibles
+  const outOfStock = product.is_digital
+    ? false
+    : product.stock === 0 && !variant
+      ? true
+      : variant
+        ? variant.stock === 0
+        : product.stock === 0
 
   return (
     <button

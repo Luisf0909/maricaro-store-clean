@@ -44,10 +44,11 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     video_url:         product?.video_url         ?? '',
   })
 
-  const [images,          setImages]          = useState<ProductImage[]>(product?.product_images ?? [])
-  const [saving,          setSaving]          = useState(false)
-  const [uploadingFile,   setUploadingFile]   = useState(false)
-  const [digitalFileName, setDigitalFileName] = useState<string>(product?.digital_file_name ?? '')
+  const [images,           setImages]           = useState<ProductImage[]>(product?.product_images ?? [])
+  const [saving,           setSaving]           = useState(false)
+  const [uploadingFile,    setUploadingFile]    = useState(false)
+  const [digitalFileName,  setDigitalFileName]  = useState<string>(product?.digital_file_name ?? '')
+  const [digitalFilePath,  setDigitalFilePath]  = useState<string>(product?.digital_file_path ?? '')
 
   function update(field: string, value: string | boolean) {
     setForm((f) => ({ ...f, [field]: value }))
@@ -62,8 +63,9 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       formData.append('productId', product!.id)
       const res = await fetch('/api/admin/digital-files', { method: 'POST', body: formData })
       if (!res.ok) { const e = await res.json(); throw new Error(e.error ?? 'Error') }
-      const { digital_file_name: fname } = await res.json()
+      const { digital_file_name: fname, path } = await res.json()
       setDigitalFileName(fname)
+      setDigitalFilePath(path)
       update('digital_file_name', fname)
       toast.success('Archivo digital subido')
     } catch (e: unknown) {
@@ -93,6 +95,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
           made_to_order:     form.is_digital ? false : form.made_to_order,
           is_digital:        form.is_digital,
           digital_file_name: form.is_digital ? (digitalFileName || null) : null,
+          digital_file_path: form.is_digital ? (digitalFilePath || null) : null,
           category_id:       form.category_id || null,
           sku:               form.sku || null,
           is_featured:       form.is_featured,

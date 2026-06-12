@@ -29,7 +29,8 @@ export async function POST(req: Request) {
 
   const body = await req.json()
   const { name, slug, description, price, compare_price, stock, made_to_order,
-          category_id, sku, is_featured, is_active, meta_title, meta_description, video_url } = body
+          category_id, sku, is_featured, is_active, meta_title, meta_description, video_url,
+          is_digital, digital_file_name, digital_file_path } = body
 
   if (!name || !slug || !price) {
     return NextResponse.json({ error: 'Nombre, slug y precio son requeridos' }, { status: 400 })
@@ -46,6 +47,9 @@ export async function POST(req: Request) {
       compare_price: compare_price ? Math.round(compare_price) : null,
       stock: stock ?? 0,
       made_to_order: made_to_order ?? false,
+      is_digital: is_digital ?? false,
+      digital_file_name: is_digital ? (digital_file_name || null) : null,
+      digital_file_path: is_digital ? (digital_file_path || null) : null,
       category_id: category_id || null,
       sku: sku || null,
       is_featured: is_featured ?? false,
