@@ -51,7 +51,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       category_id: category_id || null,
       sku: sku || null,
       is_featured: is_featured ?? false,
-      is_active: is_active ?? true,
+      is_active: is_active === undefined ? true : is_active,
       meta_title: meta_title || null,
       meta_description: meta_description || null,
       video_url: video_url || null,
