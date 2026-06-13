@@ -6,13 +6,6 @@ interface Product {
   digital_file_name: string
 }
 
-interface TokenRecord {
-  id: string
-  download_count: number
-  max_downloads: number
-  products: Product
-}
-
 export async function GET(req: Request, { params }: { params: { token: string } }) {
   try {
     const admin = createAdminClient()
