@@ -4,7 +4,7 @@ import crypto from 'crypto'
 
 interface OrderItem {
   product_id: string
-  products: { is_digital: boolean } | null
+  products: { is_digital: boolean }
 }
 
 export async function POST(req: Request) {
@@ -105,7 +105,7 @@ export async function POST(req: Request) {
           .eq('order_id', payment.external_reference)
 
         if (orderItems && orderItems.length > 0) {
-          const digitalItems = (orderItems as OrderItem[]).filter((item) => item.products?.is_digital)
+          const digitalItems = (orderItems as unknown as OrderItem[]).filter((item) => item.products?.is_digital)
 
           if (digitalItems.length > 0) {
             const tokens = digitalItems.map((item: OrderItem) => ({
