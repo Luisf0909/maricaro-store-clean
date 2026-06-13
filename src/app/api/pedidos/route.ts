@@ -75,7 +75,11 @@ export async function POST(req: Request) {
       if (!product?.is_active) {
         return NextResponse.json({ error: `${item.name} no está disponible` }, { status: 409 })
       }
-      if (!product.is_digital) {
+      if (product.is_digital) {
+        if (!product.digital_file_path) {
+          return NextResponse.json({ error: `${item.name} no tiene archivo disponible` }, { status: 409 })
+        }
+      } else {
         if (!product.made_to_order && product.stock < item.quantity) {
           return NextResponse.json({ error: `Stock insuficiente para ${item.name}` }, { status: 409 })
         }
