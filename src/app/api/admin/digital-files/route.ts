@@ -19,18 +19,7 @@ export async function POST(req: Request) {
 
   const admin = createAdminClient()
 
-  // Verify product exists
-  const { data: product, error: productError } = await admin
-    .from('products')
-    .select('id')
-    .eq('id', productId)
-    .single()
-
-  if (productError || !product) {
-    console.error(`Product not found: ${productId}`, productError)
-    return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
-  }
-
+  // Upload file to storage
   const { error: uploadError } = await admin.storage
     .from('digital-products')
     .upload(path, bytes, {
@@ -45,20 +34,10 @@ export async function POST(req: Request) {
 
   console.log(`File uploaded to storage: ${path}`)
 
-  // Persist path + display name on the product
-  const { data: updateData, error: updateError } = await admin
-    .from('products')
-    .update({ digital_file_path: path, digital_file_name: file.name })
-    .eq('id', productId)
-    .select()
-
-  console.log(`Update result for ${productId}:`, { data: updateData, error: updateError })
-
-  if (updateError) {
-    console.error('Error updating product with digital file:', updateError)
-    return NextResponse.json({ error: `DB Update failed: ${updateError.message}` }, { status: 500 })
-  }
-
-  console.log(`Digital file saved for product ${productId}: ${path}`)
-  return NextResponse.json({ digital_file_name: file.name, path, updated: true })
+  // Return path to client - it will be saved when user clicks "Guardar cambios"
+  return NextResponse.json({
+    digital_file_name: file.name,
+    path,
+    message: 'Archivo subido correctamente. Haz click en "Guardar cambios" para confirmar.'
+  })
 }
