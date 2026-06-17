@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
-import { requireAdmin } from '@/lib/supabase/admin'
+import { createAdminClient, requireAdmin } from '@/lib/supabase/admin'
 
 export async function POST(req: Request) {
   const authError = await requireAdmin()
