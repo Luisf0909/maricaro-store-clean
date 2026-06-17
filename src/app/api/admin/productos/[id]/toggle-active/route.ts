@@ -11,23 +11,29 @@ async function requireAdmin() {
 }
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  const user = await requireAdmin()
-  if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  try {
+    const user = await requireAdmin()
+    if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
-  const { is_active } = await req.json()
+    const body = await req.json()
+    const is_active = body.is_active === true || body.is_active === 'true'
 
-  if (typeof is_active !== 'boolean') {
-    return NextResponse.json({ error: 'is_active debe ser un boolean' }, { status: 400 })
+    const admin = createAdminClient()
+    const { data, error } = await admin
+      .from('products')
+      .update({ is_active })
+      .eq('id', params.id)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Toggle active error:', error)
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+
+    return NextResponse.json(data)
+  } catch (err) {
+    console.error('Toggle active exception:', err)
+    return NextResponse.json({ error: 'Error al cambiar estado' }, { status: 500 })
   }
-
-  const admin = createAdminClient()
-  const { data, error } = await admin
-    .from('products')
-    .update({ is_active })
-    .eq('id', params.id)
-    .select()
-    .single()
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-  return NextResponse.json(data)
 }
