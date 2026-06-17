@@ -38,8 +38,10 @@ export async function POST(req: Request) {
     .eq('id', productId)
 
   if (updateError) {
+    console.error('Error updating product with digital file:', updateError)
     return NextResponse.json({ error: updateError.message }, { status: 500 })
   }
 
+  console.log(`Digital file saved for product ${productId}: ${path}`)
   return NextResponse.json({ digital_file_name: file.name, path })
 }

@@ -67,8 +67,10 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       setDigitalFileName(fname)
       setDigitalFilePath(path)
       update('digital_file_name', fname)
-      toast.success('Archivo digital subido')
+      console.log('Digital file uploaded:', { fname, path })
+      toast.success('Archivo digital subido - ahora guarda el producto')
     } catch (e: unknown) {
+      console.error('Upload error:', e)
       toast.error(e instanceof Error ? e.message : 'Error al subir')
     } finally {
       setUploadingFile(false)
