@@ -99,13 +99,23 @@ export function ProductForm({ product, categories }: ProductFormProps) {
           category_id:       form.category_id || null,
           sku:               form.sku || null,
           is_featured:       form.is_featured,
-          is_active:         form.is_active,
           meta_title:        form.meta_title || null,
           meta_description:  form.meta_description || null,
           video_url:         form.video_url || null,
         }),
       })
       if (!res.ok) { const err = await res.json(); throw new Error(err.error ?? 'Error') }
+
+      // Handle is_active separately with dedicated endpoint
+      if (isEdit) {
+        const activeRes = await fetch(`/api/admin/productos/${product!.id}/toggle-active`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_active: form.is_active }),
+        })
+        if (!activeRes.ok) { const err = await activeRes.json(); throw new Error(err.error ?? 'Error al cambiar estado') }
+      }
+
       toast.success(isEdit ? 'Producto actualizado' : 'Producto creado')
       router.push('/admin/productos')
       router.refresh()
