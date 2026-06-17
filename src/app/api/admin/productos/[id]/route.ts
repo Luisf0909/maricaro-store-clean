@@ -35,6 +35,13 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
           category_id, sku, is_featured, is_active, meta_title, meta_description, video_url,
           is_digital, digital_file_name, digital_file_path } = body
 
+  console.log(`PUT /productos/${params.id}:`, {
+    is_digital,
+    digital_file_name,
+    digital_file_path,
+    bodyKeys: Object.keys(body),
+  })
+
   const admin = createAdminClient()
   const { data, error } = await admin
     .from('products')
