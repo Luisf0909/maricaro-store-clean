@@ -84,27 +84,35 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     try {
       const url    = isEdit ? `/api/admin/productos/${product!.id}` : '/api/admin/productos'
       const method = isEdit ? 'PUT' : 'POST'
+      const payload = {
+        name:              form.name,
+        slug:              form.slug || slugify(form.name),
+        description:       form.description || null,
+        price:             parseInt(form.price.replace(/\./g, '')),
+        compare_price:     form.compare_price ? parseInt(form.compare_price.replace(/\./g, '')) : null,
+        stock:             form.is_digital ? 0 : parseInt(form.stock) || 0,
+        made_to_order:     form.is_digital ? false : form.made_to_order,
+        is_digital:        form.is_digital,
+        digital_file_name: form.is_digital ? (digitalFileName || null) : null,
+        digital_file_path: form.is_digital ? (digitalFilePath || null) : null,
+        category_id:       form.category_id || null,
+        sku:               form.sku || null,
+        is_featured:       form.is_featured,
+        meta_title:        form.meta_title || null,
+        meta_description:  form.meta_description || null,
+        video_url:         form.video_url || null,
+      }
+      console.log('Sending payload:', {
+        is_digital: payload.is_digital,
+        digital_file_name: payload.digital_file_name,
+        digital_file_path: payload.digital_file_path,
+        digitalFileName,
+        digitalFilePath,
+      })
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name:              form.name,
-          slug:              form.slug || slugify(form.name),
-          description:       form.description || null,
-          price:             parseInt(form.price.replace(/\./g, '')),
-          compare_price:     form.compare_price ? parseInt(form.compare_price.replace(/\./g, '')) : null,
-          stock:             form.is_digital ? 0 : parseInt(form.stock) || 0,
-          made_to_order:     form.is_digital ? false : form.made_to_order,
-          is_digital:        form.is_digital,
-          digital_file_name: form.is_digital ? (digitalFileName || null) : null,
-          digital_file_path: form.is_digital ? (digitalFilePath || null) : null,
-          category_id:       form.category_id || null,
-          sku:               form.sku || null,
-          is_featured:       form.is_featured,
-          meta_title:        form.meta_title || null,
-          meta_description:  form.meta_description || null,
-          video_url:         form.video_url || null,
-        }),
+        body: JSON.stringify(payload),
       })
       if (!res.ok) { const err = await res.json(); throw new Error(err.error ?? 'Error') }
 
