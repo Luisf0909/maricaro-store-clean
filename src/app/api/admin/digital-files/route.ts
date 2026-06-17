@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/supabase/admin'
 
 export async function POST(req: Request) {
@@ -19,6 +20,18 @@ export async function POST(req: Request) {
   const bytes = await file.arrayBuffer()
 
   const admin = createAdminClient()
+
+  // Verify product exists
+  const { data: product, error: productError } = await admin
+    .from('products')
+    .select('id')
+    .eq('id', productId)
+    .single()
+
+  if (productError || !product) {
+    console.error(`Product not found: ${productId}`, productError)
+    return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
+  }
 
   const { error: uploadError } = await admin.storage
     .from('digital-products')
