@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient, requireAdmin } from '@/lib/supabase/admin'
-import { createClient } from '@supabase/supabase-js'
 
 export async function POST(req: Request) {
   const authError = await requireAdmin()
@@ -37,15 +36,13 @@ export async function POST(req: Request) {
 
   // Save path directly to database using SQL to bypass any RLS/permission issues
   try {
-    const { data, error: updateError } = await admin
+    const { error: updateError } = await admin
       .from('products')
       .update({
         digital_file_name: file.name,
         digital_file_path: path
       })
       .eq('id', productId)
-      .select()
-      .single()
 
     if (updateError) {
       console.error('Database update error:', updateError)
