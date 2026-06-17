@@ -34,9 +34,11 @@ export async function POST(req: Request) {
 
   console.log(`File uploaded to storage: ${path}`)
 
-  // Save path directly to database using SQL to bypass any RLS/permission issues
+  // Save path directly to database - simple and direct
+  console.log(`[SAVING] productId=${productId}, file=${file.name}, path=${path}`)
+
   try {
-    const { error: updateError } = await admin
+    const updateResult = await admin
       .from('products')
       .update({
         digital_file_name: file.name,
@@ -44,14 +46,19 @@ export async function POST(req: Request) {
       })
       .eq('id', productId)
 
-    if (updateError) {
-      console.error('Database update error:', updateError)
-      // Don't fail - file was uploaded successfully, just log the DB error
+    console.log(`[UPDATE RESULT]`, {
+      status: updateResult.status,
+      error: updateResult.error,
+      data: updateResult.data
+    })
+
+    if (updateResult.error) {
+      console.error(`[ERROR] Failed to save digital file:`, updateResult.error)
     } else {
-      console.log(`Database updated: ${productId} now has file at ${path}`)
+      console.log(`[SUCCESS] Digital file saved for product ${productId}`)
     }
-  } catch (dbError) {
-    console.error('Database exception:', dbError)
+  } catch (err) {
+    console.error(`[EXCEPTION] Error saving digital file:`, err)
   }
 
   // Return success to client
