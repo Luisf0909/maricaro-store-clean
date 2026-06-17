@@ -28,20 +28,26 @@ export async function POST(req: Request) {
     })
 
   if (uploadError) {
+    console.error('Storage upload error:', uploadError)
     return NextResponse.json({ error: uploadError.message }, { status: 500 })
   }
 
+  console.log(`File uploaded to storage: ${path}`)
+
   // Persist path + display name on the product
-  const { error: updateError } = await admin
+  const { data: updateData, error: updateError } = await admin
     .from('products')
     .update({ digital_file_path: path, digital_file_name: file.name })
     .eq('id', productId)
+    .select()
+
+  console.log(`Update result for ${productId}:`, { data: updateData, error: updateError })
 
   if (updateError) {
     console.error('Error updating product with digital file:', updateError)
-    return NextResponse.json({ error: updateError.message }, { status: 500 })
+    return NextResponse.json({ error: `DB Update failed: ${updateError.message}` }, { status: 500 })
   }
 
   console.log(`Digital file saved for product ${productId}: ${path}`)
-  return NextResponse.json({ digital_file_name: file.name, path })
+  return NextResponse.json({ digital_file_name: file.name, path, updated: true })
 }
