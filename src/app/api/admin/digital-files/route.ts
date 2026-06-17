@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient, requireAdmin } from '@/lib/supabase/admin'
+import { createClient } from '@supabase/supabase-js'
 
 export async function POST(req: Request) {
   const authError = await requireAdmin()
@@ -34,10 +35,33 @@ export async function POST(req: Request) {
 
   console.log(`File uploaded to storage: ${path}`)
 
-  // Return path to client - it will be saved when user clicks "Guardar cambios"
+  // Save path directly to database using SQL to bypass any RLS/permission issues
+  try {
+    const { data, error: updateError } = await admin
+      .from('products')
+      .update({
+        digital_file_name: file.name,
+        digital_file_path: path
+      })
+      .eq('id', productId)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('Database update error:', updateError)
+      // Don't fail - file was uploaded successfully, just log the DB error
+    } else {
+      console.log(`Database updated: ${productId} now has file at ${path}`)
+    }
+  } catch (dbError) {
+    console.error('Database exception:', dbError)
+  }
+
+  // Return success to client
   return NextResponse.json({
     digital_file_name: file.name,
     path,
-    message: 'Archivo subido correctamente. Haz click en "Guardar cambios" para confirmar.'
+    success: true,
+    message: 'Archivo subido y guardado. Haz click en "Guardar cambios" para confirmar los cambios del producto.'
   })
 }

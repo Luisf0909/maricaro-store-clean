@@ -116,29 +116,14 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       })
       if (!res.ok) { const err = await res.json(); throw new Error(err.error ?? 'Error') }
 
-      // Handle special fields with dedicated endpoints
+      // Handle is_active separately with dedicated endpoint
       if (isEdit) {
-        // Save is_active
         const activeRes = await fetch(`/api/admin/productos/${product!.id}/toggle-active`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ is_active: form.is_active }),
         })
         if (!activeRes.ok) { const err = await activeRes.json(); throw new Error(err.error ?? 'Error al cambiar estado') }
-
-        // Save digital file if is_digital
-        if (form.is_digital) {
-          console.log('Saving digital file separately:', { digitalFileName, digitalFilePath })
-          const fileRes = await fetch(`/api/admin/productos/${product!.id}/save-digital-file`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              digital_file_name: digitalFileName || null,
-              digital_file_path: digitalFilePath || null,
-            }),
-          })
-          if (!fileRes.ok) { const err = await fileRes.json(); throw new Error(err.error ?? 'Error al guardar archivo') }
-        }
       }
 
       toast.success(isEdit ? 'Producto actualizado' : 'Producto creado')
