@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 
@@ -61,6 +62,11 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+
+  // Revalidate cache
+  revalidatePath(`/admin/productos/${params.id}`)
+  revalidatePath('/admin/productos')
+
   return NextResponse.json(data)
 }
 

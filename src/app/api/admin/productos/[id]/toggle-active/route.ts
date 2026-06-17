@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 
@@ -30,6 +31,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       console.error('Toggle active error:', error)
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
+
+    // Revalidate the product edit page
+    revalidatePath(`/admin/productos/${params.id}`)
+    revalidatePath('/admin/productos')
 
     return NextResponse.json(data)
   } catch (err) {
