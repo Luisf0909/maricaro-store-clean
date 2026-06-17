@@ -49,6 +49,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
   const [uploadingFile,    setUploadingFile]    = useState(false)
   const [digitalFileName,  setDigitalFileName]  = useState<string>(product?.digital_file_name ?? '')
   const [digitalFilePath,  setDigitalFilePath]  = useState<string>(product?.digital_file_path ?? '')
+  const [hasUnsavedFile,   setHasUnsavedFile]   = useState(false)
 
   function update(field: string, value: string | boolean) {
     setForm((f) => ({ ...f, [field]: value }))
@@ -61,14 +62,18 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('productId', product!.id)
+      console.log(`[UPLOAD] Starting upload for product ${product!.id}, file: ${file.name}`)
       const res = await fetch('/api/admin/digital-files', { method: 'POST', body: formData })
       if (!res.ok) { const e = await res.json(); throw new Error(e.error ?? 'Error') }
-      const { digital_file_name: fname, path } = await res.json()
+      const data = await res.json()
+      console.log(`[UPLOAD] Response:`, data)
+      const { digital_file_name: fname, path } = data
       setDigitalFileName(fname)
       setDigitalFilePath(path)
+      setHasUnsavedFile(true)
       update('digital_file_name', fname)
-      console.log('Digital file uploaded:', { fname, path })
-      toast.success('Archivo digital subido - ahora guarda el producto')
+      console.log(`[UPLOAD] File uploaded successfully:`, { fname, path })
+      toast.success('Archivo subido. Presiona "Guardar cambios" para confirmar la actualización.')
     } catch (e: unknown) {
       console.error('Upload error:', e)
       toast.error(e instanceof Error ? e.message : 'Error al subir')
@@ -102,19 +107,31 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         meta_description:  form.meta_description || null,
         video_url:         form.video_url || null,
       }
-      console.log('Sending payload:', {
+      console.log('[FORM SUBMIT] Sending payload:', {
+        product_id: product!.id,
         is_digital: payload.is_digital,
         digital_file_name: payload.digital_file_name,
         digital_file_path: payload.digital_file_path,
-        digitalFileName,
-        digitalFilePath,
+        state_digitalFileName: digitalFileName,
+        state_digitalFilePath: digitalFilePath,
+        all_payload_keys: Object.keys(payload),
       })
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-      if (!res.ok) { const err = await res.json(); throw new Error(err.error ?? 'Error') }
+      if (!res.ok) {
+        const err = await res.json()
+        console.error(`[FORM ERROR] ${method} ${url}:`, err)
+        throw new Error(err.error ?? `Error: ${res.status}`)
+      }
+      const savedData = await res.json()
+      console.log(`[FORM SUCCESS] ${method} ${url}:`, {
+        is_digital: savedData.is_digital,
+        digital_file_name: savedData.digital_file_name,
+        digital_file_path: savedData.digital_file_path,
+      })
 
       // Handle is_active separately with dedicated endpoint
       if (isEdit) {
@@ -127,6 +144,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       }
 
       toast.success(isEdit ? 'Producto actualizado' : 'Producto creado')
+      setHasUnsavedFile(false)
       router.push('/admin/productos')
       router.refresh()
     } catch (e: unknown) {
@@ -324,7 +342,13 @@ export function ProductForm({ product, categories }: ProductFormProps) {
             </label>
           </div>
 
-          <button type="submit" disabled={saving} className="w-full bg-rose-600 hover:bg-rose-700 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors">
+          {hasUnsavedFile && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700">
+              ⚠️ Tienes un archivo digital sin guardar. Presiona "Guardar cambios" para confirmar.
+            </div>
+          )}
+
+          <button type="submit" disabled={saving} className={`w-full font-semibold py-2.5 rounded-lg text-sm transition-colors text-white ${hasUnsavedFile ? 'bg-amber-600 hover:bg-amber-700' : 'bg-rose-600 hover:bg-rose-700'} disabled:opacity-60`}>
             {saving ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear producto'}
           </button>
 

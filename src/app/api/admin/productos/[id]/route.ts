@@ -43,32 +43,45 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   })
 
   const admin = createAdminClient()
+  const updatePayload = {
+    name,
+    slug: slug?.toLowerCase().replace(/\s+/g, '-'),
+    description: description || null,
+    price: Math.round(price),
+    compare_price: compare_price ? Math.round(compare_price) : null,
+    stock: stock ?? 0,
+    made_to_order: made_to_order ?? false,
+    is_digital: is_digital ?? false,
+    digital_file_name: is_digital ? (digital_file_name || null) : null,
+    digital_file_path: is_digital ? (digital_file_path || null) : null,
+    category_id: category_id || null,
+    sku: sku || null,
+    is_featured: is_featured ?? false,
+    is_active: is_active === undefined ? true : is_active,
+    meta_title: meta_title || null,
+    meta_description: meta_description || null,
+    video_url: video_url || null,
+  }
+
+  console.log(`UPDATE PAYLOAD:`, updatePayload)
+
   const { data, error } = await admin
     .from('products')
-    .update({
-      name,
-      slug: slug?.toLowerCase().replace(/\s+/g, '-'),
-      description: description || null,
-      price: Math.round(price),
-      compare_price: compare_price ? Math.round(compare_price) : null,
-      stock: stock ?? 0,
-      made_to_order: made_to_order ?? false,
-      is_digital: is_digital ?? false,
-      digital_file_name: is_digital ? (digital_file_name || null) : null,
-      digital_file_path: is_digital ? (digital_file_path || null) : null,
-      category_id: category_id || null,
-      sku: sku || null,
-      is_featured: is_featured ?? false,
-      is_active: is_active === undefined ? true : is_active,
-      meta_title: meta_title || null,
-      meta_description: meta_description || null,
-      video_url: video_url || null,
-    })
+    .update(updatePayload)
     .eq('id', params.id)
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  if (error) {
+    console.error(`PUT ERROR for product ${params.id}:`, error)
+    return NextResponse.json({ error: error.message }, { status: 400 })
+  }
+
+  console.log(`PUT SUCCESS for product ${params.id}:`, {
+    is_digital: data.is_digital,
+    digital_file_name: data.digital_file_name,
+    digital_file_path: data.digital_file_path,
+  })
 
   // Revalidate cache
   revalidatePath(`/admin/productos/${params.id}`)

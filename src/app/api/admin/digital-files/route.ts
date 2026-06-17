@@ -34,38 +34,11 @@ export async function POST(req: Request) {
 
   console.log(`File uploaded to storage: ${path}`)
 
-  // Save path directly to database - simple and direct
-  console.log(`[SAVING] productId=${productId}, file=${file.name}, path=${path}`)
-
-  try {
-    const updateResult = await admin
-      .from('products')
-      .update({
-        digital_file_name: file.name,
-        digital_file_path: path
-      })
-      .eq('id', productId)
-
-    console.log(`[UPDATE RESULT]`, {
-      status: updateResult.status,
-      error: updateResult.error,
-      data: updateResult.data
-    })
-
-    if (updateResult.error) {
-      console.error(`[ERROR] Failed to save digital file:`, updateResult.error)
-    } else {
-      console.log(`[SUCCESS] Digital file saved for product ${productId}`)
-    }
-  } catch (err) {
-    console.error(`[EXCEPTION] Error saving digital file:`, err)
-  }
-
-  // Return success to client
+  // Return path to client - database will be updated when user saves the product
   return NextResponse.json({
     digital_file_name: file.name,
     path,
     success: true,
-    message: 'Archivo subido y guardado. Haz click en "Guardar cambios" para confirmar los cambios del producto.'
+    message: 'Archivo subido correctamente. Guarda el producto para confirmar.'
   })
 }
