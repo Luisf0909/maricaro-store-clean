@@ -107,6 +107,7 @@ export function BulkImportProducts({ categories, onComplete }: BulkImportProduct
             slug: row.slug || slugify(row.name),
             category_id: categoryId,
           }),
+          credentials: 'include'
         })
 
         if (res.ok) {

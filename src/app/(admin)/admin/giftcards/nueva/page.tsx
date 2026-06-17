@@ -45,6 +45,7 @@ export default function NuevaGiftCardPage() {
         note:            form.note || null,
         expires_at:      form.expires_at || null,
       }),
+      credentials: 'include'
     })
 
     if (res.ok) {

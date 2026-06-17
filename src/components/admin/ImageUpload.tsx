@@ -23,7 +23,11 @@ export function ImageUpload({ productId, images, onImagesChange }: ImageUploadPr
     fd.append('isPrimary', String(isPrimary))
     fd.append('altText', file.name.replace(/\.[^.]+$/, ''))
 
-    const res = await fetch('/api/admin/imagenes', { method: 'POST', body: fd })
+    const res = await fetch('/api/admin/imagenes', {
+      method: 'POST',
+      body: fd,
+      credentials: 'include'
+    })
     if (!res.ok) {
       const err = await res.json()
       throw new Error(err.error ?? 'Error al subir imagen')
@@ -88,6 +92,7 @@ export function ImageUpload({ productId, images, onImagesChange }: ImageUploadPr
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ imageId }),
+      credentials: 'include'
     })
     if (res.ok) onImagesChange(images.filter((i) => i.id !== imageId))
     else toast.error('Error al eliminar imagen')

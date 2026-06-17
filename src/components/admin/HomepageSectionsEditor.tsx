@@ -157,6 +157,7 @@ export function HomepageSectionsEditor({ initialSections }: Props) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sections: payload }),
+      credentials: 'include'
     })
     if (res.ok) toast.success('Orden guardado ✓')
     else toast.error('Error al guardar orden')

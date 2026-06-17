@@ -20,7 +20,9 @@ export default function PaymentMethodsPage() {
   async function fetchMethods() {
     try {
       setLoading(true)
-      const res = await fetch('/api/admin/payment-methods')
+      const res = await fetch('/api/admin/payment-methods', {
+        credentials: 'include'
+      })
       if (!res.ok) throw new Error('Error al cargar métodos')
       const data = await res.json()
       setMethods(data || [])
@@ -43,6 +45,7 @@ export default function PaymentMethodsPage() {
     try {
       const res = await fetch(`/api/admin/payment-methods/${method.id}`, {
         method: 'DELETE',
+        credentials: 'include'
       })
       if (!res.ok) throw new Error('Error al eliminar')
       toast.success('Método eliminado')

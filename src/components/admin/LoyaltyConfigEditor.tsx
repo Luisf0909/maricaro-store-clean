@@ -28,6 +28,7 @@ export function LoyaltyConfigEditor({ initialConfig }: Props) {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config),
+        credentials: 'include'
       })
       if (res.ok) toast.success('Configuración guardada')
       else toast.error('Error al guardar')

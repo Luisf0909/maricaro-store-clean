@@ -63,7 +63,11 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       formData.append('file', file)
       formData.append('productId', product!.id)
       console.log(`[UPLOAD] Starting upload for product ${product!.id}, file: ${file.name}`)
-      const res = await fetch('/api/admin/digital-files', { method: 'POST', body: formData })
+      const res = await fetch('/api/admin/digital-files', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      })
       if (!res.ok) { const e = await res.json(); throw new Error(e.error ?? 'Error') }
       const data = await res.json()
       console.log(`[UPLOAD] Response:`, data)
@@ -120,6 +124,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
+        credentials: 'include'
       })
       if (!res.ok) {
         const err = await res.json()
@@ -139,6 +144,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ is_active: form.is_active }),
+          credentials: 'include'
         })
         if (!activeRes.ok) { const err = await activeRes.json(); throw new Error(err.error ?? 'Error al cambiar estado') }
       }
@@ -156,7 +162,10 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 
   async function handleDelete() {
     if (!confirm('¿Eliminar este producto? Esta acción no se puede deshacer.')) return
-    const res = await fetch(`/api/admin/productos/${product!.id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/admin/productos/${product!.id}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    })
     if (res.ok) { toast.success('Eliminado'); router.push('/admin/productos'); router.refresh() }
     else toast.error('Error al eliminar')
   }

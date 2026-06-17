@@ -35,6 +35,7 @@ export function SiteConfigEditor({ initialConfig }: Props) {
         method:  'PUT',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(updates),
+        credentials: 'include'
       })
       if (!res.ok) {
         const e = await res.json()

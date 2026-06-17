@@ -91,6 +91,7 @@ export function PedidosTable({ orders, searchParams }: Props) {
           comment: bulkComment || null,
           notifyOnShipped: true,
         }),
+        credentials: 'include'
       })
 
       const data = await res.json()
