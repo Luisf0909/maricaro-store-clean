@@ -32,13 +32,41 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: uploadError.message }, { status: 500 })
   }
 
-  console.log(`File uploaded to storage: ${path}`)
+  console.log(`[STORAGE] File uploaded to storage: ${path}`)
 
-  // Return path to client - database will be updated when user saves the product
+  // IMPORTANTE: Guardar directamente en BD, sin esperar al PUT
+  console.log(`[DB] Saving digital file path to product ${productId}`)
+  try {
+    const { error: dbError, data: dbData } = await admin
+      .from('products')
+      .update({
+        digital_file_name: file.name,
+        digital_file_path: path,
+      })
+      .eq('id', productId)
+      .select()
+
+    if (dbError) {
+      console.error(`[DB ERROR] Failed to save digital file:`, dbError)
+      throw dbError
+    }
+
+    console.log(`[DB SUCCESS] Digital file saved:`, {
+      product_id: productId,
+      digital_file_name: file.name,
+      digital_file_path: path,
+      db_response: dbData,
+    })
+  } catch (err) {
+    console.error(`[DB EXCEPTION] Error saving to database:`, err)
+    throw err
+  }
+
+  // Return path to client
   return NextResponse.json({
     digital_file_name: file.name,
     path,
     success: true,
-    message: 'Archivo subido correctamente. Guarda el producto para confirmar.'
+    message: 'Archivo subido y guardado correctamente.'
   })
 }
