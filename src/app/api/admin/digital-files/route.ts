@@ -59,11 +59,29 @@ export async function POST(req: Request) {
     console.error(`[DB ERROR]`, dbError)
   }
 
-  // Return path to client
+  // Verify the update by querying again
+  const { data: verified } = await admin
+    .from('products')
+    .select('digital_file_name, digital_file_path')
+    .eq('id', productId)
+    .single()
+
+  console.log(`[DB VERIFY]`, {
+    productId,
+    verified: {
+      digital_file_name: verified?.digital_file_name,
+      digital_file_path: verified?.digital_file_path,
+    }
+  })
+
+  // Return with verified data
   return NextResponse.json({
-    digital_file_name: file.name,
-    path,
+    digital_file_name: verified?.digital_file_name || file.name,
+    path: verified?.digital_file_path || path,
     success: true,
-    message: 'Archivo subido y guardado correctamente.'
+    verified: !!verified?.digital_file_path,
+    message: verified?.digital_file_path
+      ? 'Archivo subido y guardado correctamente.'
+      : 'Archivo subido pero con advertencia de guardado.'
   })
 }
