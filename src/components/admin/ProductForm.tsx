@@ -353,7 +353,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 
           {hasUnsavedFile && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700">
-              ⚠️ Tienes un archivo digital sin guardar. Presiona "Guardar cambios" para confirmar.
+              ⚠️ Tienes un archivo digital sin guardar. Presiona &quot;Guardar cambios&quot; para confirmar.
             </div>
           )}
 
